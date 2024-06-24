@@ -1,0 +1,56 @@
+server:
+  #设置端口号
+  port: 8081 #默认端口是8080
+  tomcat:
+    connection-timeout: 10000
+  servlet:
+    context-path: /api
+spring:
+  datasource:
+    #数据库用户名
+    username: root
+    #数据库用户密码
+    password: "031206"
+    #serverTimezone=UTC 解决市区的报错 一般mysql是8.0以上的是必须配置这个
+    #userUnicode=true&characterEncoding=utf-8 指定字符编码、解码格式
+    name: user
+    driver: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/yuxin?user=root&password=031206&useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    hikari:
+      max-lifetime: 60000 #最大存活时间
+      idle-timeout: 60000 #空闲连接时间
+      connection-timeout: 50000 #连接超时时间
+      maximum-pool-size: 60 #连接池最大数
+      minimum-idle: 10 #连接池最小数
+
+  # application.properties 示例
+  spring.thymeleaf.prefix: classpath:/templates/
+  spring.thymeleaf.suffix: .html
+  spring.thymeleaf.mode: HTML
+  spring.thymeleaf.encoding: UTF-8
+  spring.thymeleaf.cache: false # 在开发时可以设置为false，生产环境应设置为true
+
+
+# 配置mybatis
+mybatis:
+  #指定pojo扫描包位置让mybatis自动扫描到指定义的pojo包下
+  type-aliases-package: com.me.test.pojo
+  #指定位置扫描Mapper接口对应的XML文件 classpath:xml文件位置
+  mapper-locations: classpath:mapper/*.xml
+
+mybatis-plus:
+  configuration:
+    # 解决 mybatis-plus 框架中 “ Unknown column 'user_account' in 'field-list'”
+    map-underscore-to-camel-case: false
+
+  jdbc.driver: com.mysql.cj.jdbc.Driver
+  jdbc.url: jdbc:mysql://localhost:3306/ssm
+  jdbc.username: root
+  jdbc.password: "031206"
+
+  global-config:
+    db-config:
+      logic-delete-field: isDelete # 全局逻辑删除字段名
+      logic-delete-value: 1 # 逻辑已删除值
+      logic-not-delete-value: 0 # 逻辑未删除值
+

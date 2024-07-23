@@ -10,31 +10,16 @@ import java.io.Serializable;
  * @param <T>
  */
 
-@Data
-public class BaseResponse<T> implements Serializable {
+public class BaseResponse<T> extends com.yupi.yucongming.dev.common.BaseResponse implements Serializable {
     int code;
     T data;
     String message = null;
-    String description = null;
-
-    public BaseResponse(int code, T data, String message, String description) {
-        this.code = code;
-        this.data = data;
-        this.message = message;
-        this.description = description;
-    }
 
     public BaseResponse(int code, T data, String message) {
-        this.code = code;
-        this.data = data;
-        this.message = message;
-        this.description = "";
+        super(code, data, message);
     }
 
     public BaseResponse(int code, T data) {
-        this.code = code;
-        this.data = data;
-        this.message = "";
-        this.description = "";
+        super(code, data);
     }
 }

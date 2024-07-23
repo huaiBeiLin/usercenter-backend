@@ -1,11 +1,13 @@
 package com.example.usercenter.service;
 
-import com.example.usercenter.Common.BaseResponse;
 import com.example.usercenter.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yupi.yucongming.dev.common.BaseResponse;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -26,4 +28,7 @@ public interface UserService extends IService<User> {
 
     boolean isAdmin(HttpServletRequest request);
 
+    BaseResponse handleExcel(InputStream excelIO) throws IOException;
+
+    User getSafetyUser(User user);
 }

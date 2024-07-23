@@ -1,14 +1,14 @@
 package com.example.usercenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.usercenter.Common.BaseResponse;
-import com.example.usercenter.Common.ErrorCode;
-import com.example.usercenter.Common.ResultUtils;
 import com.example.usercenter.model.domain.User;
 import com.example.usercenter.mapper.UserMapper;
 import com.example.usercenter.service.UserService;
+import com.yupi.yucongming.dev.client.YuCongMingClient;
+import com.yupi.yucongming.dev.common.BaseResponse;
+import com.yupi.yucongming.dev.model.DevChatRequest;
+import com.yupi.yucongming.dev.model.DevChatResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,7 +34,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     implements UserService {
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private YuCongMingClient client;
     private static final String SALT = "xxx";
+
+    private static final String prefix = "你是一个数据分析师，接下来我会给你我的分析目标和原始数据，请告诉我分析结论。";
     public long userRegister(String userAccount, String password, String checkPassword, String planetCode) {
         if (StringUtils.isAnyBlank(userAccount, password, checkPassword, planetCode)) {
             return -1;
@@ -99,18 +104,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return null;
         }
         user = userMapper.selectAllByUserAccountAndPassword(userAccount, entryPassword).get(0);
-        User safetyUser = new User();
-        safetyUser.setUsername(user.getUsername());
-        safetyUser.setId(user.getId());
-        safetyUser.setUserAccount(user.getUserAccount());
-        safetyUser.setAvatarUrl(user.getAvatarUrl());
-        safetyUser.setEmail(user.getEmail());
-        safetyUser.setPhone(user.getPhone());
-        safetyUser.setGender(user.getGender());
-        safetyUser.setUserStatus(user.getUserStatus());
-        safetyUser.setCreateTime(user.getCreateTime());
+        User safetyUser = getSafetyUser(user);
         request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
-
         return safetyUser;
     }
 
@@ -135,6 +130,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return false;
         }
         return true;
+    }
+
+
+    public BaseResponse handleExcel(InputStream excelIO) throws IOException {
+        DevChatRequest devChatRequest = new DevChatRequest();
+        devChatRequest.setModelId(1651468516836098050L);
+        devChatRequest.setMessage(excelIO.toString());
+        BaseResponse<DevChatResponse> response = client.doChat(devChatRequest);
+        return response;
+    }
+
+    public User getSafetyUser(User user) {
+        User safetyUser = new User();
+        safetyUser.setUsername(user.getUsername());
+        safetyUser.setId(user.getId());
+        safetyUser.setUserAccount(user.getUserAccount());
+        safetyUser.setAvatarUrl(user.getAvatarUrl());
+        safetyUser.setEmail(user.getEmail());
+        safetyUser.setPhone(user.getPhone());
+        safetyUser.setGender(user.getGender());
+        safetyUser.setUserStatus(user.getUserStatus());
+        safetyUser.setCreateTime(user.getCreateTime());
+        return safetyUser;
     }
 }
 
